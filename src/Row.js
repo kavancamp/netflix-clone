@@ -5,11 +5,13 @@ import YouTube from "react-youtube";
 import movieTrailer from 'movie-trailer';
 
 function Row ({ title, fetchUrl, isLargeRow }) {
-   const base_url = "https://image.tmdb.org/t/p/original"; const [movies, setMovies] = useState([]);
+   const base_url = "https://image.tmdb.org/t/p/original"; 
+   const [movies, setMovies] = useState([]);
     const [trailerUrl, setTrailerUrl] = useState("");
     // snippet which runs based on specific condition/variable
-
+    const [loading, setLoading] = useState(false);
     useEffect(() => { 
+      setLoading(true);
         //if bracket is blank->run once when row loads and dont run again.
         async function fetchData() {
             const request = await axios.get(fetchUrl);
@@ -17,9 +19,15 @@ function Row ({ title, fetchUrl, isLargeRow }) {
             setMovies(request.data.results);
             return request;
         }
-        fetchData();
+        fetchData().finally(() => {
+          setLoading(false);
+        })
+        
     }, [fetchUrl]); //dependency 
 
+    if (loading) {
+      return <p>Data is loading...</p>;
+    }
     const opts = {
       height: "390",
       width: "100%",
@@ -39,8 +47,7 @@ function Row ({ title, fetchUrl, isLargeRow }) {
             setTrailerUrl(urlParams.get('v'));
           }).catch((error) => console.log(error));
       }
-    } 
-   
+    }
 
   return (
     
@@ -50,7 +57,7 @@ function Row ({ title, fetchUrl, isLargeRow }) {
       <div className="row__posters">
         {( movies || []).map((movie) => (
           <img
-            key={movie.id} onClick={() => 
+            key={movies.id} onClick={() => 
               handleClick(movie)}
             className={`row__poster ${isLargeRow && "row__posterLarge"}`}
             src={`${base_url}${isLargeRow ? movie.poster_path : movie.backdrop_path}`}
@@ -58,10 +65,11 @@ function Row ({ title, fetchUrl, isLargeRow }) {
           ))}
       </div>
       <div style={{ padding: "40px" }}>
-        {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
+        {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />
+        };
       </div>
     </div>
   );
 }
 
-export {Row}
+export default Row;
