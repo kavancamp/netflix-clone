@@ -3,7 +3,7 @@ import Banner from "../Banner";
 import "./HomeScreen.css";
 import Nav from "../Nav";
 import requests from "../requests";
-import { Row}  from "../Row";
+import  Row  from "../Row";
 
 function HomeScreen() {
   return (
@@ -26,4 +26,4 @@ function HomeScreen() {
   );
 }
 
-export { HomeScreen }
+export default HomeScreen 
